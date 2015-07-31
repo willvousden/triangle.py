@@ -46,7 +46,8 @@ def corner(xs, bins=20, range=None, weights=None, color="k",
            truths=None, truth_color="#4682b4",
            scale_hist=False, quantiles=None, verbose=False, fig=None,
            max_n_ticks=5, top_ticks=False, use_math_text=False,
-           hist_kwargs=None, **hist2d_kwargs):
+           hist_kwargs=None, truth_line_kwargs=None, truth_point_kwargs=None,
+           **hist2d_kwargs):
     """
     Make a *sick* corner plot showing the projections of a data set in a
     multi-dimensional space. kwargs are passed to hist2d() or used for
@@ -92,6 +93,12 @@ def corner(xs, bins=20, range=None, weights=None, color="k",
 
     truth_color : str (optional)
         A ``matplotlib`` style color for the ``truths`` makers.
+
+    truth_point_kwargs : str (optional)
+        kwargs for for the truth point on 2D plots.
+
+    truth_line_kwargs : str (optional)
+        kwargs for for the truth line on 1D and 2D plots.
 
     scale_hist : bool (optional)
         Should the 1-D histograms be scaled in such a way that the zero line
@@ -251,8 +258,12 @@ def corner(xs, bins=20, range=None, weights=None, color="k",
             y0 = np.array(zip(n, n)).flatten()
             ax.plot(x0, y0, **hist_kwargs)
 
+        if truth_point_kwargs is None:
+            truth_point_kwargs = {}
+        if truth_line_kwargs is None:
+            truth_line_kwargs = {}
         if truths is not None and truths[i] is not None:
-            ax.axvline(truths[i], color=truth_color)
+            ax.axvline(truths[i], color=truth_color, **truth_line_kwargs)
 
         # Plot quantiles if wanted.
         if len(quantiles) > 0:
@@ -331,11 +342,11 @@ def corner(xs, bins=20, range=None, weights=None, color="k",
 
             if truths is not None:
                 if truths[i] is not None and truths[j] is not None:
-                    ax.plot(truths[j], truths[i], "s", color=truth_color)
+                    ax.plot(truths[j], truths[i], "s", color=truth_color, **truth_point_kwargs)
                 if truths[j] is not None:
-                    ax.axvline(truths[j], color=truth_color)
+                    ax.axvline(truths[j], color=truth_color, **truth_line_kwargs)
                 if truths[i] is not None:
-                    ax.axhline(truths[i], color=truth_color)
+                    ax.axhline(truths[i], color=truth_color, **truth_line_kwargs)
 
             ax.xaxis.set_major_locator(MaxNLocator(max_n_ticks, prune="lower"))
             ax.yaxis.set_major_locator(MaxNLocator(max_n_ticks, prune="lower"))
